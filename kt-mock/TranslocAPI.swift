@@ -1,44 +1,33 @@
 import Foundation
 import SwiftUI
+import MapKit
 
 struct TranslocAPI {
     
     struct StopCollection {
+        let stops: [Stop]
         
+        init(arr: Array<[String: Any]>) {
+            stops = arr.map {s in Stop(item: s)!}
+        }
     }
     
     struct Stop {
         let name: String
         let stopID: String
-//        let location: CLLocationCoordinate2D
-        let routes: Array<String>
-        
-//        init?(item: [String : Any]) {
+        let location: CLLocationCoordinate2D
+//        let routes: Array<String>
+
+        init?(item: [String : Any]) {
+
+            var loc = item["location"] as? [String : Any]
             
-//            guard let prop = item["properties"] as? [String : Any] else {return nil}
-//            name = prop["BldgName"] as! String
-//            number = prop["BldgNum"] as! Int
-//            centerpoint = CLLocationCoordinate2D(latitude: prop["Latitude"] as! Double, longitude: prop["Longitude"] as! Double)
-//            
-//
-//            guard let geo = item["geometry"] as? [String : Any] else {return nil}
-//            let type = geo["type"] as! String
-//            let coord = geo["coordinates"]
-//
-//            if type == "MultiPolygon" {
-//                let ex = coord as! Array<Array<Array<Array<Double>>>>
-//                coordinates = ex
-//                    .flatMap{$0}
-//                    .flatMap{$0}
-//                    .map{d in CLLocationCoordinate2D(latitude: d[1], longitude: d[0])}
-//            } else {
-//                let ls = coord as! Array<Array<Array<Double>>>
-//                coordinates = ls
-//                    .flatMap{$0}
-//                    .map{d in CLLocationCoordinate2D(latitude: d[1], longitude: d[0])}
-//            }
-//        }
-        
+            name = item["name"] as! String
+            stopID = item["stop_id"] as! String
+            location = CLLocationCoordinate2D(latitude: loc!["lat"] as! CLLocationDegrees, longitude: loc!["lng"] as! CLLocationDegrees)
+            print(name)
+        }
+
     }
 
     static func getStops(completion: @escaping (StopCollection) -> ()){
@@ -58,9 +47,8 @@ struct TranslocAPI {
         let task = URLSession.shared.dataTask(with: request as URLRequest) {(data, res, error) in guard let data = data else { return }
             do {
                 let json = try JSONSerialization.jsonObject(with: data, options: []) as! Dictionary<String, Any>
-                print(json)
-//                let out = FeatureCollection(arr: json["features"] as! Array<[String : Any]>)
-//                completion(out)
+                let out = StopCollection(arr: json["data"] as! Array<[String : Any]>)
+//                print(json["data"])
             } catch let err {
                 
             }

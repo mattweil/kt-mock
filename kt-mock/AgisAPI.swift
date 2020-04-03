@@ -60,7 +60,6 @@ struct AgisAPI {
             return}
         let task = URLSession.shared.dataTask(with: aurl) {(data, response, error) in
             guard let data = data else { return }
-            //let json = try! JSONSerialization.jsonObject(with: data, options: []) as! Dictionary<String, Any>
             do {
                 // let collection = try JSONDecoder().decode(FeatureCollection.self, from: data)
                 let json = try JSONSerialization.jsonObject(with: data, options: []) as! Dictionary<String, Any>

@@ -1,11 +1,3 @@
-//
-//  AppDelegate.swift
-//  kt-mock
-//
-//  Created by Matthew Weil on 4/2/20.
-//  Copyright © 2020 Matthew Weil. All rights reserved.
-//
-
 import UIKit
 
 @UIApplicationMain
