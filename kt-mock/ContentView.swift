@@ -5,7 +5,9 @@ struct ContentView: View {
     
     @State private var isOpen: Bool = false
     @State private var searchText: String = ""
-    @State private var polygons: [MGLPolygonFeature] = []
+    @State private var polygons: [MGLPolygonFeature] = [] // buildings
+    @State private var polylines: [MGLPolylineFeature] = []
+//    @State private var stops: [MGLCir] = []
     
     @State var annotations: [MGLPointAnnotation] = [
         MGLPointAnnotation(title: "Mapbox", coordinate: .init(latitude: 40.5008, longitude: -74.4518))
@@ -15,7 +17,7 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            MapView(annotations: $annotations, polygons: $polygons).centerCoordinate(.init(latitude: 40.5008, longitude: -74.4518)).zoomLevel(16)
+            MapView(annotations: $annotations, polygons: $polygons, polylines: $polylines).centerCoordinate(.init(latitude: 40.5008, longitude: -74.4518)).zoomLevel(16)
             Circle()
                 .fill(Color.blue)
                 .opacity(0.3)
@@ -41,6 +43,7 @@ struct ContentView: View {
                     Spacer()
                     Button(action: {
                         AgisAPI.getBuildings(completion: {fc in
+                            print("ag tap")
                             DispatchQueue.main.async {
                                 
                                 let buildings: [MGLPolygonFeature] = fc.features.map { i in
@@ -63,17 +66,13 @@ struct ContentView: View {
                 HStack {
                     Spacer()
                     Button(action: {
-                        TranslocAPI.getStops(completion: { fc in
-                            
-    //                            DispatchQueue.main.async {
-    //
-    //                                let buildings: [MKPolygon] = fc.features.map { i in
-    //                                    MKPolygon(coordinates: i.coordinates, count: i.coordinates.count)
-    //                                }
-    //                                self.polygons = buildings
-    //                            }
-                            
-                            
+                        TranslocAPI.getSegments(routes: ["4012630"], completion: { segCollection in
+                                DispatchQueue.main.async {
+                                    let segments: [MGLPolylineFeature] = segCollection.segments.map { s in
+                                        MGLPolylineFeature(coordinates: s.path, count: UInt(s.path.count))
+                                    }
+                                    self.polylines = segments
+                                }
                         });
                     }) {
                         Image(systemName: "heart")
